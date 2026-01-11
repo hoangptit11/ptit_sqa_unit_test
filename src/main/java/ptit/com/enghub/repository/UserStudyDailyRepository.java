@@ -57,5 +57,14 @@ public interface UserStudyDailyRepository
             @Param("fromDate") LocalDate fromDate
     );
 
+    @Query("""
+        SELECT COALESCE(SUM(u.totalMinutes), 0)
+        FROM UserStudyDaily u
+        WHERE u.userId = :userId
+          AND u.studyDate BETWEEN :from AND :to
+    """)
+    Integer sumTotalMinutesByUserAndDateBetween(@Param("userId") Long userId,
+                                                @Param("from") LocalDate from,
+                                                @Param("to") LocalDate to);
 
 }

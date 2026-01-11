@@ -99,4 +99,6 @@ public interface UserFlashcardProgressRepository
             @Param("userId") Long userId,
             @Param("flashcardIds") List<Long> flashcardIds
     );
+
+    int countByUserIdAndLastReviewedAtIsNotNull(Long userId);
 }

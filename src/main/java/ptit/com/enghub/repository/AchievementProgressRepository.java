@@ -35,4 +35,6 @@ public interface AchievementProgressRepository
     @Modifying
     @Query(value = "CALL reset_streak_if_missed(:userId)", nativeQuery = true)
     void resetStreakIfMissed(@Param("userId") Long userId);
+
+
 }

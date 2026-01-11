@@ -14,9 +14,10 @@ public interface AchievementRepository
     @Query("""
     select a, p
     from Achievement a
-    left join AchievementProgress p
+    inner join AchievementProgress p
         on p.achievementId = a.id
         and p.userId = :userId
+        and p.currentValue < p.targetValue
     """)
     List<Object[]> findAllWithProgress(@Param("userId") Long userId);
 }

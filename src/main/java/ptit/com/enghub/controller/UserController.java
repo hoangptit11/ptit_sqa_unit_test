@@ -12,11 +12,14 @@ import ptit.com.enghub.dto.UserLearningSettingsDto;
 import ptit.com.enghub.dto.request.*;
 import ptit.com.enghub.dto.response.ApiResponse;
 import ptit.com.enghub.dto.response.UserResponse;
+import ptit.com.enghub.dto.response.dashboard.AdminDashboardResponse;
+import ptit.com.enghub.dto.response.dashboard.UserDashboardResponse;
 import ptit.com.enghub.entity.User;
 import ptit.com.enghub.enums.Level;
 import ptit.com.enghub.enums.NotificationType;
 import ptit.com.enghub.service.NotificationService;
 import ptit.com.enghub.service.UserService;
+import ptit.com.enghub.service.dashboard.DashboardService;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ import java.util.Map;
 public class UserController {
     UserService userService;
     NotificationService noti;
+    DashboardService dashboardService;
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers(){
@@ -106,6 +110,12 @@ public class UserController {
                         .message("Đổi mật khẩu thành công")
                         .build()
         );
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<UserDashboardResponse> getDashboard() {
+        return ResponseEntity.ok(dashboardService.getDashboardUser());
+
     }
 
 }

@@ -10,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ptit.com.enghub.dto.LessonSeedData;
 import ptit.com.enghub.dto.request.CompleteLessonRequest;
 import ptit.com.enghub.dto.request.LessonCreationRequest;
+import ptit.com.enghub.dto.request.NotificationRequest;
 import ptit.com.enghub.dto.response.LessonResponse;
 import ptit.com.enghub.entity.*;
+import ptit.com.enghub.enums.Level;
+import ptit.com.enghub.enums.NotificationType;
 import ptit.com.enghub.enums.StudySkill;
 import ptit.com.enghub.exception.AppException;
 import ptit.com.enghub.exception.ErrorCode;
@@ -19,6 +22,7 @@ import ptit.com.enghub.mapper.LessonMapper;
 import ptit.com.enghub.repository.LessonRepository;
 import ptit.com.enghub.repository.UnitRepository;
 import ptit.com.enghub.repository.UserProgressRepository;
+import ptit.com.enghub.repository.UserRepository;
 import ptit.com.enghub.service.IService.LessonService;
 
 import java.time.LocalDateTime;
@@ -35,6 +39,9 @@ public class LessonServiceImpl implements LessonService {
     private final UnitRepository unitRepository;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private final UserService userService;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
+
 
     @Override
     public LessonResponse getLesson(Long lessonId) {
@@ -78,8 +85,37 @@ public class LessonServiceImpl implements LessonService {
 
         userProgressRepository.save(progress);
 
-        // Mở khóa bài học tiếp theo
+        updateUserLevel(user.getId());
+
+        NotificationRequest n = new NotificationRequest();
+        n.setUserId(user.getId().toString());
+        n.setType(NotificationType.SYSTEM_MESSAGE);
+        n.setTitle("Hoàn thành lesson");
+        n.setContent(
+                "Bạn đã hoàn thành một bài học. Hãy tiếp tục bài tiếp theo để giữ vững đà học nhé!"
+        );
+        notificationService.create(n);
+
         unlockNextLesson(lesson, user.getId());
+    }
+
+    public void updateUserLevel(Long userId) {
+
+        boolean has21 = userProgressRepository.existsByUserIdAndLessonIdAndCompletedTrue(userId, 21L);
+        boolean has22 = userProgressRepository.existsByUserIdAndLessonIdAndCompletedTrue(userId, 22L);
+        boolean has23 = userProgressRepository.existsByUserIdAndLessonIdAndCompletedTrue(userId, 23L);
+        boolean has24 = userProgressRepository.existsByUserIdAndLessonIdAndCompletedTrue(userId, 24L);
+        User user = userService.getCurrentUser();
+
+        if (has21 && has22 && user.getLevel() == Level.BEGINNER) {
+            user.setLevel(Level.INTERMEDIATE);
+        }
+
+        if (has23 && has24 && user.getLevel() != Level.ADVANCED) {
+            user.setLevel(Level.ADVANCED);
+        }
+
+        userRepository.save(user);
     }
 
     private boolean isLessonUnlocked(Lesson lesson) {

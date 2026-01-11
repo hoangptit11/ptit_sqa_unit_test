@@ -19,7 +19,7 @@ public class VideoNoteService {
     public VideoNote createNote(VideoNotesDTO request) {
         User user = userService.getCurrentUser();
         VideoNote note = VideoNote.builder()
-                .videoId(request.getId())
+                .videoId(request.getVideoId())
                 .userId(user.getId())
                 .timestamp(request.getTimestamp())
                 .content(request.getContent())
@@ -35,6 +35,7 @@ public class VideoNoteService {
                 .stream()
                 .map(note -> VideoNotesDTO.builder()
                         .id(note.getId())
+                        .videoId(note.getVideoId())
                         .timestamp(note.getTimestamp())
                         .content(note.getContent())
                         .build()

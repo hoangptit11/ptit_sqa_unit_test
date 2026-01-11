@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ptit.com.enghub.entity.Deck;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DeckRepository extends JpaRepository<Deck, Long> {
@@ -31,4 +32,6 @@ public interface DeckRepository extends JpaRepository<Deck, Long> {
     List<Deck> findAvailableSystemDecksForUser(
             @Param("userId") Long userId
     );
+
+    Optional<Deck> findByOwnerIdAndName(Long ownerId, String name);
 }
