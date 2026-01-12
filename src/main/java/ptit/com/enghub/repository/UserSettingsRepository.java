@@ -23,4 +23,6 @@ public interface UserSettingsRepository
     """)
     List<UserLearningSettings> findUsersNeedDailyEmail(LocalTime time);
     Optional<UserLearningSettings> findByUser(User user);
+
+    Optional<UserLearningSettings> findByUserId(Long userId);
 }

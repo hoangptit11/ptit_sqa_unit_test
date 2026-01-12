@@ -1,6 +1,5 @@
 package ptit.com.enghub.controller;
 
-import liquibase.ui.UIService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -8,10 +7,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import ptit.com.enghub.dto.request.AiWordRequest;
 import ptit.com.enghub.dto.response.AiWordResponse;
-import ptit.com.enghub.entity.User;
+import ptit.com.enghub.service.AIService;
 import ptit.com.enghub.service.RedisService;
-import ptit.com.enghub.service.Skill.WritingService;
-import ptit.com.enghub.service.UserService;
 
 import java.security.Principal;
 import java.util.Set;
@@ -23,7 +20,7 @@ public class WritingSocketController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisService redisService;
-    private final WritingService writingService;
+    private final AIService service;
 
     @MessageMapping("/writing/suggest")
     public void handleSuggestWord(AiWordRequest request,
@@ -50,7 +47,7 @@ public class WritingSocketController {
             return;
         }
 
-        AiWordResponse response = writingService.suggestWord(request.getWord());
+        AiWordResponse response = service.suggestWord(request.getWord());
         redisService.set( redisKey, response );
         messagingTemplate.convertAndSendToUser(
                 principal.getName(),

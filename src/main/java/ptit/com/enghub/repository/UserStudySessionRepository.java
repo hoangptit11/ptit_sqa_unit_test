@@ -50,5 +50,28 @@ public interface UserStudySessionRepository
         ORDER BY COUNT(DISTINCT s.userId) DESC
     """)
     List<Object[]> countDistinctUsersBySkill();
+
+    @Query(value = """
+    SELECT 
+        EXTRACT(DOW FROM started_at) AS day_of_week,
+        activity_type,
+        COUNT(id)
+    FROM user_study_session
+    WHERE started_at >= :fromDate
+      AND user_id = :userId
+    GROUP BY day_of_week, activity_type
+""", nativeQuery = true)
+    List<Object[]> countActivityByDay(@Param("fromDate") LocalDateTime fromDate,
+                                      @Param("userId") Long userId);
+
+    @Query("""
+    SELECT s.skill, SUM(s.durationMinutes)
+    FROM UserStudySession s
+    WHERE s.userId = :userId
+      AND s.skill IS NOT NULL
+    GROUP BY s.skill
+    ORDER BY SUM(s.durationMinutes) DESC
+""")
+    List<Object[]> sumDurationBySkill(@Param("userId") Long userId);
 }
 

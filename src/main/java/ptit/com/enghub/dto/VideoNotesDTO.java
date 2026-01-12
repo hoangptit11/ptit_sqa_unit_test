@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class VideoNotesDTO {
     private Long id;
+    private Long videoId;
     private Integer timestamp;
     private String content;
 }
